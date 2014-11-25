@@ -21,7 +21,7 @@ ENV PATH /root/.rbenv/bin:$PATH
 RUN echo 'eval "$(rbenv init -)"' >> /etc/profile.d/rbenv.sh
 RUN echo 'eval "$(rbenv init -)"' >> .bashrc
 ENV CONFIGURE_OPTS --disable-install-doc
-RUN rbenv install 2.1.5 && rbenv global 2.1.5 && gem install bundler
+RUN rbenv install 2.1.5 && && rbenv rehash && rbenv global 2.1.5 && gem install bundler
 ADD sv_stdout.conf /etc/supervisor/conf.d/
 
 VOLUME /home/strider/.strider
