@@ -14,15 +14,20 @@ RUN apt-get update && \
   update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10 && \
   pip install supervisor-stdout && \
   sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
+RUN apt-get clean
 
-RUN curl https://raw.githubusercontent.com/fesplugas/rbenv-installer/master/bin/rbenv-installer | bash
-
+# Install rbenv and ruby-build
+RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv
+RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build
+RUN ./root/.rbenv/plugins/ruby-build/install.sh
 ENV PATH /root/.rbenv/bin:$PATH
-RUN echo 'eval "$(rbenv init -)"' >> /etc/profile.d/rbenv.sh
+RUN echo 'eval "$(rbenv init -)"' >> /etc/profile.d/rbenv.sh # or /etc/profile
 RUN echo 'eval "$(rbenv init -)"' >> .bashrc
+
 ENV CONFIGURE_OPTS --disable-install-doc
 RUN rbenv install 2.1.5
-RUN gem install bundler
+RUN echo 'gem: --no-rdoc --no-ri' >> /.gemrc
+RUN bash -l -c 'rbenv global 2.1.5; gem install bundler;'
 
 ADD sv_stdout.conf /etc/supervisor/conf.d/
 
